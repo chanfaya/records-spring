@@ -1,0 +1,38 @@
+name: maven
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: download jdk
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    - name: run build
+      run: mvn -B package --file pom.xml
+    - name: move jar
+      run: |
+        mkdir -p records-spring/records-admin records-spring/records-netty
+        mv ./records-admin/target/records-admin-*.jar ./records-spring/records-admin/
+        mv ./records-netty/target/records-netty-*.jar ./records-spring/records-netty/
+        tar -zcvf records-spring.tar.gz records-spring/
+    - name: deploy server
+      uses: alinz/ssh-scp-action@master
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_PORT }}
+        user: ${{ secrets.SERVER_USER }}
+        scp: |
+          records-spring.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/
+        ssh_after: |
+          rm -rf records-spring
+          tar -zxvf records-spring.tar.gz
+          rm -rf records-spring.tar.gz
+          docker restart records-admin
