@@ -1,0 +1,117 @@
+# Compose 版本 Version 2支持更多的指令。Version 1将来会被弃用。
+version: "3"
+
+# 定义服务
+services:
+
+  # 为project定义服务
+  redis:
+    # 服务的镜像名称或镜像ID。如果镜像在本地不存在，Compose将会尝试拉取镜像
+    image: redis:7.0-alpine
+    # 配置端口 - "宿主机端口:容器暴露端口"
+    ports:
+      - "6379:6379"
+    # 容器暴漏的端口，不映射到宿主机上,只允许能被连接的服务访问。
+    #    expose:
+    #      - 80
+    # 环境变量配置
+    environment:
+      - TZ=Asia/Shanghai # 时区配置亚洲上海，解决了容器的时区问题！！！
+    # 配置容器连接的网络，引用顶级 networks 下的条目(就是最下面配置的networks(一级目录))
+    networks:
+      records-spring:
+        # 为单redis创建别名, REDIS_URL标记为redis服务的地址. (不配置aliases也可以, 这样就通过定义的服务名: redis链接)
+        aliases:
+          - REDIS_URL
+    # 挂载
+    volumes:
+      - "/usr/local/docker/redis/redis.conf:/etc/redis/redis.conf"
+      - "/usr/local/docker/redis/data:/data"
+    # 容器总是重新启动
+    restart: always
+    # 相当于执行一些命令
+    command:
+      redis-server /etc/redis/redis.conf --appendonly yes
+    # 指定一个自定义容器名称，而不是生成的默认名称。
+    container_name: redis
+    # 使用该参数，container内的root拥有真正的root权限。
+    privileged: true
+    # 依赖的容器
+  #    depends_on:
+  #      - mysql
+
+  mysql:
+    image: mysql:8.0-oracle
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    # 添加环境变量
+    environment:
+      TZ: Asia/Shanghai # 时区配置亚洲上海，解决了容器的时区问题！！！
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - "/usr/local/docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf"
+      - "/usr/local/docker/mysql/logs:/var/log/mysql"
+      - "/usr/local/docker/mysql/data:/var/lib/mysql"
+      - "/etc/localtime:/etc/localtime"
+    networks:
+      records-spring:
+        aliases:
+          - MYSQL_URL
+    restart: always
+    privileged: true
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    hostname: myRabbit
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_VHOST = "my_vhost "
+      - RABBITMQ_DEFAULT_USER = "admin"
+      - RABBITMQ_DEFAULT_PASS = "admin"
+      - TZ = Asia/Shanghai
+    volumes:
+      - "/usr/local/docker/rabbitmq/data:/var/lib/rabbitmq"
+    networks:
+      records-spring:
+        aliases:
+          - RABBIRMQ_URL
+#  mqtt:
+#    image: eclipse-mosquitto:2.0
+#    ports:
+#      - 3062
+#    volumes:
+#      - ":"
+
+
+#  project-name:
+#    # 服务的镜像名称或镜像ID。如果镜像在本地不存在，Compose将会尝试拉取镜像
+#    image: project-name:1.0.0
+#    # 构建镜像
+#    build:
+#      # 指定项目的地址
+#      context: /root/docker_mysql_redis
+#      # 指定Dockerfile
+#      dockerfile: Dockerfile
+#    ports:
+#      - 8080:8080
+#    # 从文件添加环境变量
+#    env_file:
+#      - /root/environment.env
+#    networks:
+#      network_name:
+#       aliases:
+#        - PROJECT_URL
+#    privileged: true
+#    restart: always
+#    container_name: test-name
+
+# ........可以继续添加
+
+networks:
+  # bridge：默认，需要单独配置ports映射主机port和服务的port，并且开启了容器间通信
+  records-spring:
+    driver: bridge
