@@ -1,13 +1,16 @@
 package com.records.demo;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RecordsDemoApplication {
+@Slf4j
+public class DemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RecordsDemoApplication.class, args);
+        SpringApplication.run(DemoApplication.class, args);
+        log.info("------ records-demo 启动成功 ------");
     }
 
 }
