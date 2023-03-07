@@ -32,4 +32,11 @@ public class Result<T extends Object> {
         this.data = null;
         this.info = status.getMessage();
     }
+    public static <T> Result<T> getResult(BaseResultCode status, T data){
+        return new Result<>(status, data);
+    }
+
+    public static Result getResult(BaseResultCode status){
+        return new Result<>(status);
+    }
 }

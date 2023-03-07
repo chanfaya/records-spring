@@ -12,6 +12,11 @@ public enum ResultCode2ForServer implements BaseResultCode {
 
     DELETE_SUCCESS(200,  "删除成功"),
 
+    LOGIN_SUCCESS(200,  "登录成功"),
+
+    LOGOUT_SUCCESS(200,  "退出成功"),
+
+
     UPDATE_SUCCESS(200,  "更新成功");
 
     /**

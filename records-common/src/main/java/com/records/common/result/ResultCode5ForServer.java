@@ -14,6 +14,8 @@ public enum ResultCode5ForServer implements BaseResultCode {
 
     DUPLICATE_NAME(5008, "数据重复"),
 
+    LOGIN_ERROR(5010, "用户名或密码错误"),
+
     BEI_YONG(500000, "结尾备用，在上面添加就行");
 
 

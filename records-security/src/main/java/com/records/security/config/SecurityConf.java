@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * security 配置类
+ * 从Sping Boot 3.0.0（或Spring Framework 6）开始，.antMatchers for AuthorizationManagerRequestMatcherRegistry不再可用。
+ * 请改为使用.requestMatchers("/register")（若要进行更多自定义，请使用.requestMatchers(new AntPathRequestMatcher()）
  *
  * @date 2023/2/12
  */
@@ -27,31 +29,30 @@ public class SecurityConf {
     private RestfulAccessDeniedHandler restfulAccessDeniedHandler;
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
-    @Autowired(required = false)
     private DynamicSecurityService dynamicSecurityService;
-    @Autowired(required = false)
     private DynamicSecurityFilter dynamicSecurityFilter;
 
     @Autowired
-    public SecurityConf(IgnoreUrlsConfig ignoreUrlsConfig, RestfulAccessDeniedHandler restfulAccessDeniedHandler, RestAuthenticationEntryPoint restAuthenticationEntryPoint, JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter) {
+    public SecurityConf(IgnoreUrlsConfig ignoreUrlsConfig, RestfulAccessDeniedHandler restfulAccessDeniedHandler, RestAuthenticationEntryPoint restAuthenticationEntryPoint, JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter, DynamicSecurityService dynamicSecurityService, DynamicSecurityFilter dynamicSecurityFilter) {
         this.ignoreUrlsConfig = ignoreUrlsConfig;
         this.restfulAccessDeniedHandler = restfulAccessDeniedHandler;
         this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
         this.jwtAuthenticationTokenFilter = jwtAuthenticationTokenFilter;
+        this.dynamicSecurityService = dynamicSecurityService;
+        this.dynamicSecurityFilter = dynamicSecurityFilter;
     }
-
-
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity
                 .authorizeRequests();
         //不需要保护的资源路径允许访问
         for (String url : ignoreUrlsConfig.getUrls()) {
-            registry.antMatchers(url).permitAll();
+            registry.requestMatchers(url).permitAll();
         }
         //允许跨域请求的OPTIONS请求
-        registry.antMatchers(HttpMethod.OPTIONS)
+        registry.requestMatchers(HttpMethod.OPTIONS)
                 .permitAll();
         // 任何请求需要身份认证
         registry.and()

@@ -20,8 +20,8 @@
     <properties>
         <java.version>17</java.version>
         <jwt.version>0.11.5</jwt.version>
-        <!-- 分页插件-->
-        <pagehelper.version>1.4.6</pagehelper.version>
+        <!-- mybatis plus-->
+        <mybatis.plus.version>3.5.3.1</mybatis.plus.version>
         <!-- spring boot aop -->
         <springBoot.aop.version>3.0.2</springBoot.aop.version>
         <!-- guava 工具库-->
@@ -54,20 +54,9 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <!-- mybatis 分页插件-->
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>${pagehelper.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-autoconfigure</artifactId>
-            <version>${pagehelper.version}</version>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis.plus.version}</version>
         </dependency>
         <!-- spring boot aop 库 -->
         <dependency>

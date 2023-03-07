@@ -1,28 +1,27 @@
 server:
   servlet:
     context-path: /records
-  port: 8080
+  port: 8079
 
 spring:
   application:
     name: records-admin
-
-mybatis:
+  profiles:
+    active: dev
 
 jwt:
   tokenHeader: Authorization #JWT存储的请求头
-  secret: records-chanfa-secret #JWT加解密使用的密钥
+  secret: mall-admin-secret #JWT加解密使用的密钥
   expiration: 604800 #JWT的超期限时间(60*60*24*7)
-  tokenHead: ''  #JWT负载中拿到开头
+  tokenHead: 'Bearer '  #JWT负载中拿到开头
+
 secure:
   ignored:
     urls: #安全路径白名单
-      - /actuator/**
       - /admin/login
       - /admin/register
       - /admin/info
       - /admin/logout
-      - /minio/upload
 
 redis:
   database: mall
@@ -31,3 +30,10 @@ redis:
     resourceList: 'ums:resourceList'
   expire:
     common: 86400 # 24小时
+
+mybatis-plus:
+  config-location:
+    - classpath*:/mapper/**/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true

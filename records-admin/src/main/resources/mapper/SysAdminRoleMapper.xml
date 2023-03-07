@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.records.admin.system.mapper.SysAdminRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.records.admin.system.entiey.SysAdminRole">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="adminId" column="admin_id" jdbcType="BIGINT"/>
+            <result property="roleId" column="role_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,admin_id,role_id
+    </sql>
+    <insert id="insertList">
+        INSERT INTO sys_admin_role (admin_id, role_id) VALUES
+        <foreach collection="list" separator="," item="item" index="index">
+            (#{item.adminId,jdbcType=BIGINT},
+            #{item.roleId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+    <select id="getAdminIdList" resultType="java.lang.Long">
+        SELECT
+            DISTINCT ar.admin_id
+        FROM
+            sys_role_resource rr
+                LEFT JOIN sys_admin_role ar ON rr.role_id = ar.role_id
+        WHERE rr.resource_id=#{resourceId}
+
+    </select>
+    <select id="getRoleList" resultType="com.records.admin.system.entiey.SysRole">
+        select r.*
+        from sys_admin_role ar left join ums_role r on ar.role_id = r.id
+        where ar.admin_id = #{adminId}
+    </select>
+    <select id="getResourceList" resultType="com.records.admin.system.entiey.SysResource">
+        SELECT
+            ur.id id,
+            ur.create_time createTime,
+            ur.`name` `name`,
+            ur.url url,
+            ur.description description
+        FROM
+            sys_admin_role ar
+                LEFT JOIN sys_role r ON ar.role_id = r.id
+                LEFT JOIN sys_role_resource rrr ON r.id = rrr.role_id
+                LEFT JOIN sys_resource ur ON ur.id = rrr.resource_id
+        WHERE
+            ar.admin_id = #{adminId}
+          AND ur.id IS NOT NULL
+        GROUP BY
+            ur.id
+    </select>
+
+</mapper>

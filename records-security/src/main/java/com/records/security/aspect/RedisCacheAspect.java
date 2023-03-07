@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 public class RedisCacheAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheAspect.class);
 
-    @Pointcut("execution(public * com.records..admin.service.*CacheService.*(..)) || execution(public * com.records.admin.service.*CacheService.*(..))")
+    @Pointcut("execution(public * com.records..admin.service.*CacheService.*(..))")
     public void cacheAspect() {
     }
 
