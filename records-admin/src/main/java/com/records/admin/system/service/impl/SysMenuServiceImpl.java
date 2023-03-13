@@ -52,7 +52,7 @@ public class SysMenuServiceImpl implements SysMenuService{
     public List<SysMenuNode> treeList() {
         List<SysMenu> menuList = menuMapper.selectList(new QueryWrapper<>());
         List<SysMenuNode> result = menuList.stream()
-                .filter(menu -> menu.getParentId().equals(0L))
+                .filter(menu -> menu.getParentId() == null)
                 .map(menu -> covertMenuNode(menu, menuList)).collect(Collectors.toList());
         return result;
     }
@@ -69,7 +69,7 @@ public class SysMenuServiceImpl implements SysMenuService{
         SysMenuNode node = new SysMenuNode();
         BeanUtils.copyProperties(menu, node);
         List<SysMenuNode> children = menuList.stream()
-                .filter(subMenu -> subMenu.getParentId().equals(menu.getId()))
+                .filter(subMenu -> subMenu.getParentId() != null&& subMenu.getParentId().equals(menu.getId()))
                 .map(subMenu -> covertMenuNode(subMenu, menuList)).collect(Collectors.toList());
         node.setChildren(children);
         return node;

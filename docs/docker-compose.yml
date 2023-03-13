@@ -16,7 +16,7 @@ services:
     #      - 80
     # 环境变量配置
     environment:
-      - TZ=Asia/Shanghai # 时区配置亚洲上海，解决了容器的时区问题！！！
+      TZ: "Asia/Shanghai" # 时区配置亚洲上海，解决了容器的时区问题！！！
     # 配置容器连接的网络，引用顶级 networks 下的条目(就是最下面配置的networks(一级目录))
     networks:
       records-spring:
@@ -42,49 +42,64 @@ services:
 
   mysql:
     image: mysql:8.0-oracle
-    container_name: mysql
+    container_name: mysql8.0
     ports:
       - "3306:3306"
     # 添加环境变量
     environment:
-      TZ: Asia/Shanghai # 时区配置亚洲上海，解决了容器的时区问题！！！
-      MYSQL_ROOT_PASSWORD: root
+      TZ: "Asia/Shanghai" # 时区配置亚洲上海，解决了容器的时区问题！！！
+      MYSQL_ROOT_PASSWORD: "root"
     volumes:
-      - "/usr/local/docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf"
-      - "/usr/local/docker/mysql/logs:/var/log/mysql"
-      - "/usr/local/docker/mysql/data:/var/lib/mysql"
-      - "/etc/localtime:/etc/localtime"
+      - "/usr/local/docker/mysql8.0/my.cnf:/etc/mysql/my.cnf"
+      - "/usr/local/docker/mysql8.0/log:/var/log/mysql"
+      - "/usr/local/docker/mysql8.0/conf:/etc/mysql/conf.d/"
+      - "/usr/local/docker/mysql8.0/data:/var/lib/mysql"
     networks:
       records-spring:
         aliases:
           - MYSQL_URL
     restart: always
     privileged: true
-
+# rabbitmq 不要再弹出框里输密码
   rabbitmq:
     image: rabbitmq:management-alpine
     hostname: myRabbit
     container_name: rabbitmq
+    privileged: true
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - RABBITMQ_DEFAULT_VHOST = "my_vhost "
-      - RABBITMQ_DEFAULT_USER = "admin"
-      - RABBITMQ_DEFAULT_PASS = "admin"
-      - TZ = Asia/Shanghai
+      RABBITMQ_DEFAULT_VHOST: "my_vhost"
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "admin"
+      TZ: "Asia/Shanghai"
     volumes:
       - "/usr/local/docker/rabbitmq/data:/var/lib/rabbitmq"
+    restart: always
     networks:
       records-spring:
         aliases:
           - RABBIRMQ_URL
-#  mqtt:
-#    image: eclipse-mosquitto:2.0
-#    ports:
-#      - 3062
-#    volumes:
-#      - ":"
+
+  mqtt:
+    image: eclipse-mosquitto:2.0.15
+    container_name: mqtt
+    privileged: true
+    ports:
+      - 1883:1883
+      - 9001:9001
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - "/usr/local/docker/mqtt/conf:/mosquitto/config"
+      - "/usr/local/docker/mqtt/data:/mosquitto/data"
+      - "/usr/local/docker/mqtt/log:/mosquitto/log"
+    restart: always
+    networks:
+      records-spring:
+        aliases:
+          - MQTT_URL
 
 
 #  project-name:
